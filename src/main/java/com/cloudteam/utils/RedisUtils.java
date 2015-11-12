@@ -5,6 +5,7 @@ import redis.clients.jedis.Jedis;
 
 
 public class RedisUtils {
+	
 	public RedisUtils(){
 		connect();
 	}
