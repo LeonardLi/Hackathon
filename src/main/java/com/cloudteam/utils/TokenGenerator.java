@@ -15,7 +15,7 @@ public class TokenGenerator {
 	private TokenGenerator() {
 		for(int i=1;i<1001;i++)
 		{
-			TokenMap.put(1, getCharAndNumr(25));
+			TokenMap.put(i, getCharAndNumr(25));
 		}
 	}
 
