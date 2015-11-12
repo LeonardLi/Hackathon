@@ -10,17 +10,18 @@ import java.util.Date;
 
 import com.cloudteam.handler.LoginHandler;
 import com.cloudteam.utils.RedisUtils;
+import com.cloudteam.utils.*;
 
 public class Server {
-	private static int PORT = 8888;
+	private static int PORT = 8080;
 	public static String charsetString = "utf-8";
 	private ServerSocket socket = null;
 	private Socket clientSocket = null;
 
 	public static void main(String[] agrs) {
-		new RedisUtils();
+		TokenGenerator.getInstance();
+		//TokenGenerator.getInstance().TokenMap
 		new Server();
-		
 	}
 
 	public Server() {

@@ -15,7 +15,6 @@ public class AddFoodHandler extends MyHandler {
 	public String AddFoodHand(String food_info, String access_token,
 			String cart_id) throws SQLException {
 		String return_info = null;
-		String token = super.getCharAndNumr(20);
 		// ����
 		/*
 		 * { "food_id": 2, "count": 1 }
