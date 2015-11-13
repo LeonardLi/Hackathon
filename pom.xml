@@ -14,13 +14,17 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
-	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>3.8.1</version>
-			<scope>test</scope>
-		</dependency>
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+    
+    <!--json-lib-->  
+	<dependency>  
+    <groupId>net.sf.json-lib</groupId>  
 
 		<!--json-lib -->
 		<dependency>
@@ -42,6 +46,9 @@
 			<artifactId>jedis</artifactId>
 			<version>2.7.3</version>
 		</dependency>
+
+		<!-- commons-pool -->
+		
 		<!-- httpserver -->
 		<dependency>
 			<groupId>com.sun.net.httpserver</groupId>
