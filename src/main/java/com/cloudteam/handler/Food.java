@@ -13,22 +13,18 @@ import net.sf.json.JSONObject;
 
 public class Food {
 
+	public String return_info = null;
 	public Food() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public String AddFoodHand(String food_info, String access_token, String cart_id){
+	public int AddFoodHand(String food_info, String access_token, String cart_id){
 		String return_info = null;
-		/*if(food_info.equals(null))
-			return newServer.ErrorCode_EMPTY_REQUEST;  //空请求
-		if(access_token.equals(null))
-			return newServer.ErrorCode_INVALID_ACCESS_TOKEN;  //token为空
 		if(cart_id.equals(null) || cart_id.equals(""))
 			return newServer.ErrorCode_CART_NOT_FOUND;  //篮子不存在
 		//判断篮子是否存在
 		if(true)  //存在
 		{
-			//判断篮子是不是他的,篮子的access_token和传过来的accesstoken对比
 			if(true)  //篮子是他的
 			{
 				if(true)  //篮子数量不超出三个
@@ -53,7 +49,7 @@ public class Food {
 					}
 				}else
 					{
-					return newServer.ErrorCode_FOOD_OUT_OF_LIMIT;
+						return newServer.ErrorCode_FOOD_OUT_OF_LIMIT;
 					}
 			}else
 			{
@@ -62,7 +58,7 @@ public class Food {
 		}else
 		{
 			return newServer.ErrorCode_CART_NOT_FOUND;
-		}*/
-		return return_info;
+		}
+		return newServer.SuccessCode;
 	}
 }

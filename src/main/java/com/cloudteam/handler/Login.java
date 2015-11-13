@@ -18,8 +18,6 @@ public class Login  {
 
 	public int LoginHand(String login_info)  {
 		
-		if(login_info.equals(null))
-			return newServer.ErrorCode_EMPTY_REQUEST;
 		try {
 			JSONObject jsonobj = new JSONObject();
 			jsonobj = JSONObject.fromObject(login_info);
@@ -50,6 +48,6 @@ public class Login  {
 		} catch (Exception e) { 
 			return newServer.ErrorCode_MALFORMED_JSON;  //格式错误
 		}
-		return newServer.SuccessCode_LOGIN;
+		return newServer.SuccessCode;
 	}
 }
