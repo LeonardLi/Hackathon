@@ -11,9 +11,9 @@ import com.cloudteam.utils.TokenGenerator;
 
 import net.sf.json.JSONObject;
 
-public class FoodHandler extends MyHandler {
+public class Food {
 
-	public FoodHandler() {
+	public Food() {
 		// TODO Auto-generated constructor stub
 	}
 

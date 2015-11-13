@@ -4,9 +4,9 @@ import com.cloudteam.hackathonServer.newServer;
 
 import net.sf.json.JSONObject;
 
-public class OrderHandler extends MyHandler{
+public class Order {
 
-	public OrderHandler() {
+	public Order() {
 		// TODO Auto-generated constructor stub
 	}
 	public String OrderHand(String order_info,String access_token){

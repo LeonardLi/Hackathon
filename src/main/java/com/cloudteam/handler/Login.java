@@ -9,14 +9,14 @@ import com.cloudteam.utils.DButils;
 import com.cloudteam.utils.*;
 import com.cloudteam.hackathonServer.*;
 
-public class Login extends MyHandler {
+public class Login  {
 	public String return_info = null;
 	public Login() {
 		// TODO Auto-generated constructor stub
 		super();
 	}
 
-	public int LoginHand(String login_info) throws SQLException {
+	public int LoginHand(String login_info)  {
 		
 		if(login_info.equals(null))
 			return newServer.ErrorCode_EMPTY_REQUEST;
