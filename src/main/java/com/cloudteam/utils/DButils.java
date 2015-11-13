@@ -9,7 +9,7 @@ import java.sql.Statement;
 public class DButils {
 
 	private static final String DRIVE_PATH = "com.mysql.jdbc.Driver";
-	private static final String URL = "jdbc:mysql://192.168.1.102:3306/eleme";
+	private static final String URL = "jdbc:mysql://127.0.0.1:3306/eleme";
 	private static final String USER = "root";
 	private static final String PASSWORD = "toor";
 

@@ -158,7 +158,7 @@ class Handler extends Thread {
 					// System.out.println("11111111111111111");
 					Login lh = new Login();
 					// System.out.println("2222222222");
-					response = lh.LoginHand(request_info);
+					//response = lh.LoginHand(request_info);
 				} else if (request_type.contains("POST")
 						|| request_type.contains("GET")
 						&& request_type.contains("/foods")) {

@@ -10,16 +10,16 @@ import com.cloudteam.utils.*;
 import com.cloudteam.hackathonServer.*;
 
 public class Login extends MyHandler {
-
+	public String return_info = null;
 	public Login() {
 		// TODO Auto-generated constructor stub
 		super();
 	}
 
-	public String LoginHand(String login_info) throws SQLException {
-		String return_info = null;
+	public int LoginHand(String login_info) throws SQLException {
+		
 		if(login_info.equals(null))
-			return String.valueOf(newServer.ErrorInfo_EMPTY_REQUEST);
+			return newServer.ErrorCode_EMPTY_REQUEST;
 		try {
 			JSONObject jsonobj = new JSONObject();
 			jsonobj = JSONObject.fromObject(login_info);
@@ -39,7 +39,7 @@ public class Login extends MyHandler {
 							+ resultSet.getString("name")
 							+ "\",\n\"access_token\": \"" + TokenGenerator.getInstance().TokenMap.get(Integer.parseInt(resultSet.getString("id"))) + "\"\n}";
 				} else{
-					return String.valueOf(newServer.ErrorInfo_USER_AUTH_FAIL);   //用户名或密码错误
+					return newServer.ErrorCode_USER_AUTH_FAIL;   //用户名或密码错误
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -48,8 +48,8 @@ public class Login extends MyHandler {
 			}
 
 		} catch (Exception e) { 
-			return String.valueOf(newServer.ErrorInfo_MALFORMED_JSON);  //格式错误
+			return newServer.ErrorCode_MALFORMED_JSON;  //格式错误
 		}
-		return return_info;
+		return newServer.SuccessCode_LOGIN;
 	}
 }

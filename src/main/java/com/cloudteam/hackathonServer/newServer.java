@@ -11,6 +11,12 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
+
+
+
+import net.sf.json.JSONObject;
 
 import com.cloudteam.handler.Login;
 import com.sun.net.httpserver.Headers;
@@ -20,21 +26,21 @@ import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.spi.HttpServerProvider;
 
 public class newServer  {
-	public static int SuccessCode_LOGIN = 200;
-	public static int ErrorCode_INVALID_ACCESS_TOKEN = 401;
-	public static int ErrorCode_MALFORMED_JSON = 400;
-	public static int ErrorCode_USER_AUTH_FAIL = 403;
-	public static int ErrorCode_NOT_AUTHORIZED_TO_ACCESS_CART = 401;
-	public static int ErrorCode_FOOD_OUT_OF_LIMIT = 403;
-	public static int ErrorCode_FOOD_NOT_FOUND = 404;
-	public static int ErrorCode_CART_NOT_FOUND = 404;
-	public static int ErrorCode_FOOD_OUT_OF_STOCK = 403;
-	public static int ErrorCode_ORDER_OUT_OF_LIMIT = 403;
-	public static int ErrorCode_EMPTY_REQUEST = 400;
+	public final static int SuccessCode_LOGIN = 200;
+	public final static int ErrorCode_INVALID_ACCESS_TOKEN = 401;
+	public final static int ErrorCode_MALFORMED_JSON = 400;
+	public final static int ErrorCode_USER_AUTH_FAIL = 403;
+	public final static int ErrorCode_NOT_AUTHORIZED_TO_ACCESS_CART = 401;
+	public final static int ErrorCode_FOOD_OUT_OF_LIMIT = 403;
+	public final static int ErrorCode_FOOD_NOT_FOUND = 404;
+	public final static int ErrorCode_CART_NOT_FOUND = 404;
+	public final static int ErrorCode_FOOD_OUT_OF_STOCK = 403;
+	public final static int ErrorCode_ORDER_OUT_OF_LIMIT = 403;
+	public final static int ErrorCode_EMPTY_REQUEST = 410;
 	
 	public static String ErrorInfo_INVALID_ACCESS_TOKEN = "{\n\"code\":\"INVALID_ACCESS_TOKEN\",\n\"message\":\"��Ч������\"\n}";
-	public static String ErrorInfo_MALFORMED_JSON = "{\n\"code\":\"MALFORMED_JSON\",\n\"message\":\"格式错误\"\n}";
-	public static String ErrorInfo_USER_AUTH_FAIL = "{\n\"code\":\"USER_AUTH_FAIL\",\n\"message\":\"用户名或密码错误\"\n}";
+	public static String ErrorInfo_MALFORMED_JSON = "{\n"+"\"code\":\"MALFORMED_JSON\",\n"+"\"message\":\"格式错误\"\n}";
+	public static String ErrorInfo_USER_AUTH_FAIL = "{\"code\":\"USER_AUTH_FAIL\",\"message\":\"用户名或密码错误\"}";
 	public static String ErrorInfo_NOT_AUTHORIZED_TO_ACCESS_CART = "{\"code\":\"NOT_AUTHORIZED_TO_ACCESS_CART\",\"meaasge\":��Ȩ�޷���ָ��������\"}";
 	public static String ErrorInfo_FOOD_OUT_OF_LIMIT = "{\"code\":\"FOOD_OUT_OF_LIMIT\",\"message\":\"������ʳ����������������\"}";
 	public static String ErrorInfo_FOOD_NOT_FOUND = "{\"code\":\"FOOD_NOT_FOUND\",\"message\":\"ʳ�ﲻ����\"}";
@@ -44,15 +50,18 @@ public class newServer  {
 	public static String ErrorInfo_EMPTY_REQUEST = "{\"code\":\"EMPTY_REQUEST\" \"message\": \"请求体为空\" }";
 	
 	public static void main(String[] args) throws Exception {
-		
+		if(beforeStartServer()){			
 		start();
+		}else{
+			System.out.println("init error");
+		}
     }
 	
 	public static void  start() throws IOException{
 		HttpServerProvider provider = HttpServerProvider.provider();
 		
 		//指定端口号和最大并发数
-		HttpServer httpServer = provider.createHttpServer(new InetSocketAddress(8080),1000);
+		HttpServer httpServer = provider.createHttpServer(new InetSocketAddress(8081),1000);
 		
 		//绑定处理器
 		httpServer.createContext("/login", new loginHandler());
@@ -65,11 +74,20 @@ public class newServer  {
         httpServer.setExecutor(null);
         httpServer.start();
 	}
+	
+	public static boolean beforeStartServer(){
+		Map<Integer,JSONObject> reponseMap = new HashMap<Integer, JSONObject>();
+		
+		return true;
+	}
+	
+	
 	//继承myHandler,重写handle()接口，提供了
     static class loginHandler extends myHandler {
         @Override
         public void handle(HttpExchange t) throws IOException{
-            String response = "This is the login";
+            String response = "";
+            JSONObject res = new JSONObject();
             //获取请求体，
             URI uri = t.getRequestURI();
             System.out.println(uri.toString());
@@ -86,26 +104,37 @@ public class newServer  {
             
 			try {
 				Login lh = new Login();
-				response = lh.LoginHand(data);
-				System.out.println(response+ "\n");
-				if(response.equals(ErrorInfo_EMPTY_REQUEST))  //空请求或格式错误400
-				{
-					t.sendResponseHeaders(ErrorCode_EMPTY_REQUEST, response.length());
+				int status_code = lh.LoginHand(data);
+				response = lh.return_info;
+				switch (status_code) {
+				case SuccessCode_LOGIN:
+					t.sendResponseHeaders(SuccessCode_LOGIN, response.getBytes().length);
+					res = JSONObject.fromObject(response);
+					break;
+					
+				case ErrorCode_MALFORMED_JSON:
+					response = ErrorInfo_MALFORMED_JSON;				
+					res = JSONObject.fromObject(response);
+					t.sendResponseHeaders(ErrorCode_MALFORMED_JSON, response.getBytes().length);				
+					break;
+				case ErrorCode_USER_AUTH_FAIL:
+					response = ErrorInfo_USER_AUTH_FAIL;
+					res = JSONObject.fromObject(ErrorInfo_USER_AUTH_FAIL);
+					t.sendResponseHeaders(ErrorCode_USER_AUTH_FAIL, response.getBytes().length);
+					break;
+				case ErrorCode_EMPTY_REQUEST:
+					response = ErrorInfo_EMPTY_REQUEST;
+					res = JSONObject.fromObject(ErrorInfo_EMPTY_REQUEST);
+					t.sendResponseHeaders(ErrorCode_EMPTY_REQUEST-10, response.getBytes().length);
+					break;
+				default:
+					break;
 				}
-				else if(response.equals(ErrorInfo_MALFORMED_JSON))
-				{
-					t.sendResponseHeaders(ErrorCode_MALFORMED_JSON, response.length());
-				}
-				else if(response.equals(ErrorInfo_USER_AUTH_FAIL))   //用户名或密码错误403
-				{
-					t.sendResponseHeaders(ErrorCode_USER_AUTH_FAIL, response.length());
-				}
-				else
-				{
-					t.sendResponseHeaders(SuccessCode_LOGIN, response.length());
-				}
+				System.out.println(res+ "\n");
+				
 	            OutputStream os = t.getResponseBody();
-	            os.write(response.getBytes());
+	            
+	            os.write(res.toString().getBytes());
 	            os.close();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
@@ -113,11 +142,11 @@ public class newServer  {
 			}
 			
             //获取Header里任意属性
-            Headers headers = t.getRequestHeaders();
-            t.sendResponseHeaders(200, response.length());
-            OutputStream os = t.getResponseBody();
-            os.write(response.getBytes());
-            os.close();
+//            Headers headers = t.getRequestHeaders();
+//            t.sendResponseHeaders(200, response.length());
+//            OutputStream os = t.getResponseBody();
+//            os.write(response.getBytes());
+//            os.close();
         }
     }
     
@@ -212,9 +241,11 @@ class myHandler implements HttpHandler{
 
 	@Override
 	public void handle(HttpExchange t) throws IOException {
+
 		// TODO Auto-generated method stub
 		
 	}
+	
 	public String getToken(URI uri){
 		URI tokenUri = uri;
 		tokenUri.getAuthority();
