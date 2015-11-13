@@ -11,10 +11,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
-
-import net.sf.json.JSONObject;
 
 import com.cloudteam.handler.AdminOrders;
 import com.cloudteam.handler.Carts;
@@ -24,13 +20,28 @@ import com.cloudteam.handler.Login;
 import com.cloudteam.handler.Order;
 import com.cloudteam.handler.Orders;
 import com.cloudteam.handler.TokenCheck;
+import com.cloudteam.utils.RedisOperator;
+import com.cloudteam.utils.TokenGenerator;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.spi.HttpServerProvider;
 
+import net.sf.json.JSONObject;
+
 public class newServer {
+	public static String APP_HOST = "0.0.0.0";
+	public static int APP_PORT = 8080;
+
+	public static String DB_HOST = "localhost";
+	public static int DB_PORT = 3306;
+	public static String DB_NAME = "eleme";
+	public static String DB_USER = "root";
+	public static String DB_PASS = "toor";
+
+	public static String REDIS_HOST = "localhost";
+	public static int REDIS_PORT = 6379;
 	public final static int SuccessCode = 200;
 	public final static int ErrorCode_INVALID_ACCESS_TOKEN = 401;
 	public final static int ErrorCode_MALFORMED_JSON = 400;
@@ -67,7 +78,7 @@ public class newServer {
 
 		// 指定端口号和最大并发数
 		HttpServer httpServer = provider.createHttpServer(
-				new InetSocketAddress(8080), 1000);
+				new InetSocketAddress(8081), 1000);
 
 		// 绑定处理器
 		httpServer.createContext("/login", new loginHandler());
@@ -81,8 +92,24 @@ public class newServer {
 	}
 
 	public static boolean beforeStartServer() {
-		Map<Integer, JSONObject> reponseMap = new HashMap<Integer, JSONObject>();
-
+		RedisOperator op = new RedisOperator();
+		TokenCheck.getInstance();
+/////////////////////////////////////		
+		if(!isFirstLoadToken()){
+			//加载Token到Redis中，懒加载，
+			TokenGenerator.getInstance().generateToken();
+			
+			op.copyToken2Redis(TokenGenerator.getInstance().User2Token);
+			
+		}else{
+			//get token from redis	
+			TokenGenerator.getInstance().setToken(op.getTokenMap());
+		}
+/////////////////////////////////////		
+		if(!isFirstLoadFoods()){
+			//加载库存表到Redis服务器中
+			op.copy2Redis();
+		}
 		return true;
 	}
 
@@ -155,8 +182,8 @@ public class newServer {
 							response.getBytes().length);
 				} else {
 					// token不为空
-					TokenCheck check = new TokenCheck(token);
-					if (check.checkToken()) { // token有效
+					
+					if (TokenCheck.getInstance().checkToken(token)) { // token有效
 						// 获取请求数据，非阻塞
 						BufferedReader body = new BufferedReader(
 								new InputStreamReader(t.getRequestBody()));
@@ -232,8 +259,8 @@ public class newServer {
 					t.sendResponseHeaders(ErrorCode_INVALID_ACCESS_TOKEN,
 							response.getBytes().length);
 					// token不为空
-					TokenCheck check = new TokenCheck(token);
-					if (check.checkToken()) {
+
+					if (TokenCheck.getInstance().checkToken(token)) {
 						// token有效
 						Carts carts = new Carts();
 						response = carts.return_info;
@@ -268,8 +295,7 @@ public class newServer {
 			} else {
 				// token不为空
 				JSONObject res = new JSONObject();
-				TokenCheck check = new TokenCheck(token);
-				if (check.checkToken()) {
+				if (TokenCheck.getInstance().checkToken(token)) {
 					// token有效
 					Foods foods = new Foods();
 					response = foods.QueryFoodsHand();
@@ -305,8 +331,8 @@ public class newServer {
 						response.getBytes().length);
 			} else {
 				// token不为空
-				TokenCheck check = new TokenCheck(token);
-				if (check.checkToken()) { // token有效
+
+				if (TokenCheck.getInstance().checkToken(token)) { // token有效
 					// 获取请求数据，非阻塞
 					BufferedReader body = new BufferedReader(
 							new InputStreamReader(t.getRequestBody()));
@@ -386,8 +412,7 @@ public class newServer {
 						response.getBytes().length);
 			} else {
 				// token不为空
-				TokenCheck check = new TokenCheck(token);
-				if (check.checkToken()) {
+				if (TokenCheck.getInstance().checkToken(token)) {
 					// token有效
 					Orders orders = new Orders();
 					response = orders.QueryOrdersHand(token);  //返回数据
@@ -421,8 +446,8 @@ public class newServer {
 						response.getBytes().length);
 			} else {
 				// token不为空
-				TokenCheck check = new TokenCheck(token);
-				if (check.checkToken()) {
+
+				if (TokenCheck.getInstance().checkToken(token)) {
 					// token有效
 					AdminOrders adminorders = new AdminOrders();
 					response = adminorders.QueryAdminOrdersHand(token);  //返回数据
@@ -439,6 +464,18 @@ public class newServer {
 			os.write(response.getBytes());
 			os.close();
 		}
+	}
+	
+	private static boolean isFirstLoadToken(){
+		//连接数据库，是否第一次加载
+		RedisOperator op = new RedisOperator();	
+		boolean is = op.checkLoadToken();
+		return is;
+	}
+	
+	private static boolean isFirstLoadFoods(){
+		RedisOperator op = new RedisOperator();		
+		return op.checkLoadAmount();
 	}
 
 }

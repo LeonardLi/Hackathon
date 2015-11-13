@@ -35,7 +35,7 @@ public class Login  {
 					return_info = "{\n" + "\"user_id\": "
 							+ resultSet.getString("id") + ",\n\"username\": \""
 							+ resultSet.getString("name")
-							+ "\",\n\"access_token\": \"" + TokenGenerator.getInstance().TokenMap.get(Integer.parseInt(resultSet.getString("id"))) + "\"\n}";
+							+ "\",\n\"access_token\": \"" + TokenGenerator.getInstance().User2Token.get(Integer.parseInt(resultSet.getString("id"))) + "\"\n}";
 				} else{
 					return newServer.ErrorCode_USER_AUTH_FAIL;   //用户名或密码错误
 				}

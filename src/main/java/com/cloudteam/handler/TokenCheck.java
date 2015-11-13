@@ -3,14 +3,23 @@ package com.cloudteam.handler;
 import com.cloudteam.utils.TokenGenerator;
 
 public class TokenCheck {
-	String token = null;
-	public TokenCheck(String token) {
-		this.token = token;
+
+	private static class TokenCheckHolder {
+		private static final TokenCheck INSTANCE = new TokenCheck();
 	}
-	public boolean checkToken(){
-		if(TokenGenerator.getInstance().TokenMap.containsValue(token)){
-		return true;
+
+	private TokenCheck() {
+
+	}
+
+	public boolean checkToken(String token) {
+		if (TokenGenerator.getInstance().User2Token.containsValue(token)) {
+			return true;
 		}
 		return false;
+	}
+
+	public static final TokenCheck getInstance() {
+		return TokenCheckHolder.INSTANCE;
 	}
 }

@@ -22,10 +22,6 @@
       <scope>test</scope>
     </dependency>
     
-    <!--json-lib-->  
-	<dependency>  
-    <groupId>net.sf.json-lib</groupId>  
-
 		<!--json-lib -->
 		<dependency>
 			<groupId>net.sf.json-lib</groupId>
