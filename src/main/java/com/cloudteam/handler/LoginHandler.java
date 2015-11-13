@@ -13,11 +13,11 @@ public class LoginHandler extends MyHandler {
 	public LoginHandler() {
 		// TODO Auto-generated constructor stub
 		super();
-	}// ��¼
+	}
 
 	public String LoginHand(String login_info) throws SQLException {
 		String return_info = null;
-		// ����
+		
 		try {
 			JSONObject jsonobj = new JSONObject();
 			jsonobj = JSONObject.fromObject(login_info);
