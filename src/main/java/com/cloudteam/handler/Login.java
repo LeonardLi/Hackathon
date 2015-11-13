@@ -7,17 +7,19 @@ import java.sql.Statement;
 import net.sf.json.JSONObject;
 import com.cloudteam.utils.DButils;
 import com.cloudteam.utils.*;
+import com.cloudteam.hackathonServer.*;
 
-public class LoginHandler extends MyHandler {
+public class Login extends MyHandler {
 
-	public LoginHandler() {
+	public Login() {
 		// TODO Auto-generated constructor stub
 		super();
 	}
 
 	public String LoginHand(String login_info) throws SQLException {
 		String return_info = null;
-		
+		if(login_info.equals(null))
+			return String.valueOf(newServer.ErrorInfo_EMPTY_REQUEST);
 		try {
 			JSONObject jsonobj = new JSONObject();
 			jsonobj = JSONObject.fromObject(login_info);
@@ -32,12 +34,13 @@ public class LoginHandler extends MyHandler {
 				ResultSet resultSet = (ResultSet) statement.executeQuery(sql
 						.toString());
 				if (resultSet.next()) {
-					return_info = "200 OK\n{\n" + "\"user_id\": "
+					return_info = "{\n" + "\"user_id\": "
 							+ resultSet.getString("id") + ",\n\"username\": \""
 							+ resultSet.getString("name")
 							+ "\",\n\"access_token\": \"" + TokenGenerator.getInstance().TokenMap.get(Integer.parseInt(resultSet.getString("id"))) + "\"\n}";
-					} else
-					return super.ErrorCode_USER_AUTH_FAIL; 
+				} else{
+					return String.valueOf(newServer.ErrorInfo_USER_AUTH_FAIL);   //用户名或密码错误
+				}
 			} catch (SQLException e) {
 				e.printStackTrace();
 			} finally {
@@ -45,7 +48,7 @@ public class LoginHandler extends MyHandler {
 			}
 
 		} catch (Exception e) { 
-			return super.ErrorCode_MALFORMED_JSON; 
+			return String.valueOf(newServer.ErrorInfo_MALFORMED_JSON);  //格式错误
 		}
 		return return_info;
 	}

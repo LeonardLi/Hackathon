@@ -36,6 +36,18 @@ public class TokenGenerator {
 		   }
 		  }
 		  return val;
-		 }
+	}
+	
+	public static String getToken(String request_type) {
+		String access_token = null;
+		if(request_type.contains("access_token=") && (request_type.split("=").length==2))
+		{
+			if(!request_type.split("=")[1].equals(null))
+			{
+				access_token = request_type.split("=")[1];
+			}
+		}
+		return access_token;
+	}
 
 }

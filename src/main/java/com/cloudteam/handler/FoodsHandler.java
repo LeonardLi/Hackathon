@@ -10,16 +10,15 @@ import com.cloudteam.utils.DButils;
 /*
  * ��ѯ���
  * */
-public class QueryFoodsHandler extends MyHandler {
+public class FoodsHandler extends MyHandler {
 
-	public QueryFoodsHandler() {
+	public FoodsHandler() {
 		// TODO Auto-generated constructor stub
 	}
 
 	public String QueryFoodsHand(String access_token) throws SQLException {
 		String return_info = null;
-		// ����
-		try {
+		/*try {
 			Connection connection = DButils.getConnection(true);
 			try {
 				StringBuilder sql = new StringBuilder();
@@ -54,7 +53,7 @@ public class QueryFoodsHandler extends MyHandler {
 			}
 		} catch (Exception e) { // ����JSON���ݣ�ֱ�ӷ��ش���
 			return super.ErrorCode_MALFORMED_JSON; // �����ʽ����
-		}
+		}*/
 		return return_info;
 	}
 }

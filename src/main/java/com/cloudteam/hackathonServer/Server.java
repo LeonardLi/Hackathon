@@ -7,7 +7,7 @@ import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import com.cloudteam.handler.LoginHandler;
+import com.cloudteam.handler.Login;
 import com.cloudteam.utils.TokenGenerator;
 
 public class Server {
@@ -71,6 +71,7 @@ class Handler extends Thread {
 	private Socket socket;
 	private BufferedReader reader;
 	private PrintStream printer;
+	public static String ErrorCode_INVALID_ACCESS_TOKEN = "401 Unauthorized\n{\n\"code\":\"INVALID_ACCESS_TOKEN\",\n\"message\":\"��Ч������\"\n}";
 
 	Handler(Socket socket) {
 		this.socket = socket;
@@ -126,8 +127,10 @@ class Handler extends Thread {
 				Thread.sleep(10);
 			}
 			if (isGo == true) {
-				String request_type = this.reader.readLine();
+				String request_type = this.reader.readLine(); // ��ȡ��һ��
 				String readline = null;
+				String access_token = null;
+				String cart_id = null;
 				while ((readline = this.reader.readLine()) != null) {
 					if (readline.equals("")) {
 						break;
@@ -153,7 +156,7 @@ class Handler extends Thread {
 						|| request_type.contains("GET")
 						&& request_type.contains("/login")) { // Login
 					// System.out.println("11111111111111111");
-					LoginHandler lh = new LoginHandler();
+					Login lh = new Login();
 					// System.out.println("2222222222");
 					response = lh.LoginHand(request_info);
 				} else if (request_type.contains("POST")
@@ -183,10 +186,10 @@ class Handler extends Thread {
 						&& request_type.contains("/admin-orders")) {
 
 				}
+				
 
-				else {
-					isGo = false;
-				}
+			} else {
+				response = "无对应的应答";
 			}
 
 		} catch (InterruptedException e) {
@@ -197,9 +200,11 @@ class Handler extends Thread {
 
 		} finally {
 			if (isGo == true) {
+				if (response.equals(null))
+					response = "返回为空";
 				return response;
 			} else {
-				return "null";
+				return "返回为空";
 			}
 		}
 	}
