@@ -4,10 +4,12 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import net.sf.json.JSONObject;
+
+import com.cloudteam.hackathonServer.newServer;
 import com.cloudteam.utils.DButils;
-import com.cloudteam.utils.*;
-import com.cloudteam.hackathonServer.*;
+import com.cloudteam.utils.TokenGenerator;
+
+import net.sf.json.JSONObject;
 
 public class Login  {
 	public String return_info = null;

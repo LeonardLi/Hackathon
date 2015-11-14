@@ -13,8 +13,6 @@ import java.net.InetSocketAddress;
 import java.net.URI;
 import java.util.Map;
 
-import net.sf.json.JSONObject;
-
 import com.cloudteam.handler.AdminOrders;
 import com.cloudteam.handler.Carts;
 import com.cloudteam.handler.Food;
@@ -30,6 +28,9 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.spi.HttpServerProvider;
+
+import net.sf.json.JSONException;
+import net.sf.json.JSONObject;
 
 public class newServer {
 	public static String APP_HOST = "0.0.0.0";
@@ -87,7 +88,6 @@ public class newServer {
 		httpServer.createContext("/login", new loginHandler());
 		httpServer.createContext("/carts", new cartsHandler());
 		httpServer.createContext("/foods", new foodsHandler());
-		// httpServer.createContext("/order", new orderHandler());
 		httpServer.createContext("/orders", new ordersHandler());
 		httpServer.createContext("/admin/orders", new admin_ordersHandler());
 		httpServer.setExecutor(null);
@@ -126,7 +126,35 @@ public class newServer {
 		REDIS_PORT = Integer.parseInt(map.get("REDIS_PORT"));
 	}
 
-	// 继承myHandler,重写handle()接口，提供了
+/**
+ * 
+ * @author leonard
+ * 
+ * Request:
+ * POST /login
+ * {
+ * "username": "root",
+ * "password": "toor"
+ * }
+ * 
+ * Response:
+ * 200 OK
+ * {
+ *  "user_id": 1,
+ *   "username": "robot",
+ *   "access_token": "xxx"
+ *	}
+ *
+ * 403 Forbidden
+ *	{
+ *   "code": "USER_AUTH_FAIL",
+ *   "message": "用户名或密码错误"
+ *	}
+ *
+ *
+
+ */
+
 	static class loginHandler extends myHandler {
 		@Override
 		public void handle(HttpExchange t) throws IOException {
@@ -175,6 +203,29 @@ public class newServer {
 		}
 	}
 
+/**
+ * 
+ * @author leonard
+ * 创建篮子
+ * POST /carts?access_token=xxx
+ * 
+ * 200 OK
+ *	{
+ *   "cart_id ": "e0c68eb96bd8495dbb8fcd8e86fc48a3"
+ *	}
+ *
+ * 添加食物
+ * PATCH /carts/:cartid?access_token=xxx
+ *	{
+    "food_id": 2,
+    "count": 1
+	}
+ *
+ * 204 No content
+ * 
+ * 
+ *
+ */
 	static class cartsHandler extends myHandler { // 创建篮子或者添加食物到篮子
 		@Override
 		public void handle(HttpExchange t) throws IOException {
@@ -264,6 +315,21 @@ public class newServer {
 
 	}
 
+	/**
+	 * 查询库存
+	 * Request:
+	 * GET /foods?access_token=xxx
+	 * @author leonard
+	 *
+	 * Response:
+	 * 200 OK
+	 * [
+     *  {"id": 1, "price": 12, "stock": 99},
+     *  {"id": 2, "price": 10, "stock": 89},
+     *  {"id": 3, "price": 22, "stock": 91}
+     * ]
+	 *
+	 */
 	static class foodsHandler extends myHandler {
 
 		@Override
@@ -320,7 +386,17 @@ public class newServer {
 			            response = ErrorInfo_EMPTY_REQUEST;
 			            t.sendResponseHeaders(ErrorCode_EMPTY_REQUEST,
 			                response.getBytes().length);
-			          } else {
+			          }else{			          			          
+			          
+			        	  JSONObject orderjson = new JSONObject();
+			        	  orderjson = JSONObject.fromObject(data);
+			        	  if(orderjson.toString().equals("")){
+			        		  response = ErrorInfo_MALFORMED_JSON;
+				        	  t.sendResponseHeaders(ErrorCode_MALFORMED_JSON, response.getBytes().length);
+			        	  }else{
+			        	  
+			        	  
+			          
 			            Order oh = new Order();
 			            int status_code = oh.OrderHand(data, token);
 			            response = oh.return_info;
@@ -368,8 +444,8 @@ public class newServer {
 			              break;
 			            }
 			            System.out.println(response + "\n");
-				}
-
+			          }
+			          }
 			}
 			}
 			OutputStream os = t.getResponseBody();

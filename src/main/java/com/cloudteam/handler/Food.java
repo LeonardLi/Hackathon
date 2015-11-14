@@ -1,12 +1,6 @@
 package com.cloudteam.handler;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-
 import com.cloudteam.hackathonServer.newServer;
-import com.cloudteam.utils.DButils;
 import com.cloudteam.utils.RedisOperator;
 import com.cloudteam.utils.TokenGenerator;
 

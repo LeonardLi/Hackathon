@@ -7,10 +7,6 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.print.attribute.standard.Sides;
-
-import com.cloudteam.hackathonServer.newServer;
-
 import net.sf.json.JSONObject;
 
 public class RedisOperator {
