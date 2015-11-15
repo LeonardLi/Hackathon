@@ -1,7 +1,10 @@
 package com.cloudteam.handler;
 
 import com.cloudteam.hackathonServer.newServer;
+import com.cloudteam.utils.RedisOperator;
+import com.cloudteam.utils.TokenGenerator;
 
+import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
 public class Order {
@@ -23,15 +26,20 @@ public class Order {
 			JSONObject jsonobj = new JSONObject();
 			jsonobj = JSONObject.fromObject(order_info);
 			String cart_id = jsonobj.getString("cart_id");
-			if(true)  //篮子存在
+			RedisOperator op = new RedisOperator();
+			
+			if(op.isCartsExist(cart_id))  //篮子存在
 			{
-				if(true)  //篮子是他的
+				if(TokenGenerator.getInstance().User2Token.get(cart_id).equals(access_token))  //篮子是他的
 				{
-					if(true)  //还未下单
+					if(!op.checkOrders(cart_id))  //还未下单
 					{
-						if(true)  //食物库存足
+						if(op.checkAmout(jsonobj))  //食物库存足
 						{
+							op.reduceAmount();
+							op.createOrder(order_id, data);
 							//创建订单，清空篮子
+							
 							return_info = "{\"id\":\"someorderid\"}";
 						}
 						else
@@ -50,7 +58,7 @@ public class Order {
 			{
 				return newServer.ErrorCode_CART_NOT_FOUND;  //篮子不存在
 			}
-		} catch (Exception e) { 
+		} catch (JSONException e) { 
 				return newServer.ErrorCode_MALFORMED_JSON;  //JSON格式错误
 		}
 		return newServer.SuccessCode;
