@@ -13,11 +13,9 @@ public class Orders {
 	public String QueryOrdersHand(String access_token) {
 		/*GET /orders?access_token=xxx*/
 		String return_info = null;
-		int order_id = TokenGenerator.getInstance().Token2User.get(access_token);
+		String order_id = access_token;  //token暂时为order_id
 		RedisOperator operator = new RedisOperator();
-		return_info = operator.getOrder(String.valueOf(order_id));
-		//return_info  = "[{\"id\":\"someorderid\",\"items\":[{\"food_id\": 2, \"count\": 1}],\"total\": 10}]";
-		//System.out.println(return_info);
+		return_info = operator.getOrder(order_id);
 		return return_info;
 	}
 }

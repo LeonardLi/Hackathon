@@ -8,7 +8,16 @@ public class TokenGenerator {
 	
 	public Map<Integer,String> User2Token=new HashMap<Integer, String>();
 	public Map<String,Integer> Token2User = new HashMap<String, Integer>();
+	public Map<Integer,Integer> Food2Price = new HashMap<Integer, Integer>();
 	
+	public Map<Integer, Integer> getFood2Price() {
+		return Food2Price;
+	}
+
+	public void setFood2Price(Map<Integer, Integer> food2Price) {
+		Food2Price = food2Price;
+	}
+
 	private static class TokenGeneratorHolder {
 		private static final TokenGenerator INSTANCE = new TokenGenerator();
 	}

@@ -4,6 +4,7 @@ import com.cloudteam.hackathonServer.newServer;
 import com.cloudteam.utils.RedisOperator;
 import com.cloudteam.utils.TokenGenerator;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
@@ -16,31 +17,22 @@ public class Order {
 	}
 
 	public int OrderHand(String order_info,String access_token){
-		String return_info = null;
-		//开始判断食物
-		/*POST /orders?access_token=xxx
-{
-    "cart_id": "e0c68eb96bd8495dbb8fcd8e86fc48a3"
-}*/
 		try {
 			JSONObject jsonobj = new JSONObject();
 			jsonobj = JSONObject.fromObject(order_info);
-			String cart_id = jsonobj.getString("cart_id");
+			String cart_id = jsonobj.getString("cart_id");  //篮子ID
 			RedisOperator op = new RedisOperator();
 			
 			if(op.isCartsExist(cart_id))  //篮子存在
 			{
-				if(TokenGenerator.getInstance().User2Token.get(cart_id).equals(access_token))  //篮子是他的
+				if(cart_id.equals(access_token))  //篮子是他的
 				{
 					if(!op.checkOrders(cart_id))  //还未下单
 					{
-						if(op.checkAmout(jsonobj))  //食物库存足
+						if(op.checkAmout(order_info))  //食物库存足
 						{
-							op.reduceAmount();
-							op.createOrder(order_id, data);
-							//创建订单，清空篮子
-							
-							return_info = "{\"id\":\"someorderid\"}";
+							op.createOrder(access_token, cart_id); //传入购物车的信息下订单，已经更新了库存
+							return_info = "{\"id\":\"" + access_token + "\"}";
 						}
 						else
 						{
@@ -61,6 +53,6 @@ public class Order {
 		} catch (JSONException e) { 
 				return newServer.ErrorCode_MALFORMED_JSON;  //JSON格式错误
 		}
-		return newServer.SuccessCode;
+ 		return newServer.SuccessCode;
 	}
 }

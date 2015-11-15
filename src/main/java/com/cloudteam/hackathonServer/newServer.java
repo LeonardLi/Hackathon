@@ -29,7 +29,6 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.spi.HttpServerProvider;
 
-import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
 public class newServer {
@@ -67,7 +66,7 @@ public class newServer {
 	public static String ErrorInfo_CART_NOT_FOUND = "{\"code\":\"CART_NOT_FOUND\",\"message\":\"篮子不存在\"}";
 	public static String ErrorInfo_FOOD_OUT_OF_STOCK = "{\"code\":\"FOOD_OUT_OF_STOCK\",\"message\":\"食物库存不足\"}";
 	public static String ErrorInfo_ORDER_OUT_OF_LIMIT = "{\"code\":\"ORDER_OUT_OF_LIMIT\",\"message\":\"每个用户只能下一单\"}";
-	public static String ErrorInfo_EMPTY_REQUEST = "{\"code\":\"EMPTY_REQUEST\" \"message\": \"请求体为空\" }";
+	public static String ErrorInfo_EMPTY_REQUEST = "{\"code\":\"EMPTY_REQUEST\",\"message\": \"请求体为空\" }";
 
 	public static void main(String[] args) throws Exception {
 		if (beforeStartServer()) {
@@ -113,9 +112,12 @@ public class newServer {
 			// 加载库存表到Redis服务器中
 			op.copy2Redis();
 		}
+		
+		//
+		
 		return true;
 	}
-
+	
 	public static void initVariebles() {
 		Map<String, String> map = System.getenv();
 		APP_HOST = map.get("APP_HOST");
@@ -167,7 +169,8 @@ public class newServer {
 					t.getRequestBody()));
 			String data = body.readLine();
 
-			if (data.equals("")) {
+			System.out.println("data!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + data);
+			if (data == null || data.equals("")) {
 				response = ErrorInfo_EMPTY_REQUEST;
 				t.sendResponseHeaders(ErrorCode_EMPTY_REQUEST,
 						response.getBytes().length);
@@ -232,46 +235,42 @@ public class newServer {
 			String response = "";
 			System.out.println(t.getRequestMethod());
 			URI uri = t.getRequestURI();
-			System.out.println(uri.toString());
+			System.out.println("uri:.............." + uri.toString());
 			// 获取请求体，
-
 			String token = this.getToken(uri, t);
 			if (token == null || !TokenCheck.getInstance().checkToken(token)) {
 				response = ErrorInfo_INVALID_ACCESS_TOKEN;
 				t.sendResponseHeaders(ErrorCode_INVALID_ACCESS_TOKEN,
 						response.getBytes().length);
 			} else {
-				// /////////////////////////////////////////////////
+				// token有效
 				if (t.getRequestMethod().equals("PATCH")) {// 添加食物PATCH
-
-					// token有效
 					BufferedReader body = new BufferedReader(
 							new InputStreamReader(t.getRequestBody()));
 					String data = body.readLine();
-					if (data.equals("")) {
+					if (data == null || data.equals("")) {
 						// 数据为空
 						response = ErrorInfo_EMPTY_REQUEST;
 						t.sendResponseHeaders(ErrorCode_EMPTY_REQUEST,
 								response.getBytes().length);
 					} else {
 						// 数据不为空
-						String cart_id = uri.toString().substring(13,
-								uri.toString().indexOf("?"));
-						System.out.println("cart_id:" + cart_id);
+						System.out.println("data:......" + data); 
+						//考虑到两种token传递方式来获取cart_id
+						String cart_id = uri.getPath().substring(7);
+						System.out.println("cart_id............:" + cart_id);
 						Food fh = new Food();
 						int status_code = fh.AddFoodHand(data, token, cart_id);
 
 						switch (status_code) {
 						case SuccessCode:
-							t.sendResponseHeaders(NoContent, 0);
+							t.sendResponseHeaders(NoContent, -1);
 							break;
-
 						case ErrorCode_FOOD_OUT_OF_LIMIT:
 							response = ErrorInfo_FOOD_OUT_OF_LIMIT;
 							t.sendResponseHeaders(ErrorCode_FOOD_OUT_OF_LIMIT,
 									response.getBytes().length);
 							break;
-
 						case ErrorCode_NOT_AUTHORIZED_TO_ACCESS_CART:
 							response = ErrorInfo_NOT_AUTHORIZED_TO_ACCESS_CART;
 							t.sendResponseHeaders(
@@ -289,22 +288,20 @@ public class newServer {
 							t.sendResponseHeaders(ErrorCode_MALFORMED_JSON,
 									response.getBytes().length);
 							break;
+						case ErrorCode_FOOD_NOT_FOUND:
+							response = ErrorInfo_FOOD_NOT_FOUND;
+							t.sendResponseHeaders(ErrorCode_FOOD_NOT_FOUND,
+									response.getBytes().length);
+							break;
 						default:
 							break;
 						}
-
 					}
-
-				}
-
-				// /////////////////////////////////////////////////
-				else // 创建篮子POST
-				{// token有效
+				}else{// 创建篮子
 					Carts carts = new Carts();
 					response = carts.CreateCartsHand(token);
 					t.sendResponseHeaders(SuccessCode,
 							response.getBytes().length);
-
 				}
 			}
 
@@ -316,7 +313,6 @@ public class newServer {
 	}
 
 	/**
-	 * 查询库存
 	 * Request:
 	 * GET /foods?access_token=xxx
 	 * @author leonard
@@ -338,6 +334,7 @@ public class newServer {
 			URI uri = t.getRequestURI();
 			System.out.println(uri.toString());
 			String token = this.getToken(uri, t);
+			System.out.println("token:..............." + token);
 			if (token == null || !TokenCheck.getInstance().checkToken(token)) {
 				// token为空
 				response = ErrorInfo_INVALID_ACCESS_TOKEN;
@@ -382,7 +379,7 @@ public class newServer {
 			          BufferedReader body = new BufferedReader(
 			              new InputStreamReader(t.getRequestBody()));
 			          String data = body.readLine();
-			          if (data.equals("")) {
+			          if (data == null || data.equals("")) {
 			            response = ErrorInfo_EMPTY_REQUEST;
 			            t.sendResponseHeaders(ErrorCode_EMPTY_REQUEST,
 			                response.getBytes().length);
@@ -394,19 +391,13 @@ public class newServer {
 			        		  response = ErrorInfo_MALFORMED_JSON;
 				        	  t.sendResponseHeaders(ErrorCode_MALFORMED_JSON, response.getBytes().length);
 			        	  }else{
-			        	  
-			        	  
-			          
 			            Order oh = new Order();
 			            int status_code = oh.OrderHand(data, token);
+			            
 			            response = oh.return_info;
 			            switch (status_code) {
-			            //OK 200
-			            //CART_NOT_FOUND 404
-			            //NOT_AUTHORIZED_TO_ACCESS_CART 403
-			            //FOOD_OUT_OF_STOCK 403
-			            //ORDER_OUT_OF_LIMIT 403
 			            case SuccessCode:
+			            	System.out.println(response + "............................" + "\n");
 			              t.sendResponseHeaders(SuccessCode,
 			                  response.getBytes().length);
 			              break;
@@ -425,7 +416,7 @@ public class newServer {
 			              break;
 
 			            case ErrorCode_ORDER_OUT_OF_LIMIT:
-			              response = ErrorInfo_CART_NOT_FOUND;
+			              response = ErrorInfo_ORDER_OUT_OF_LIMIT;
 			              t.sendResponseHeaders(
 			                  ErrorCode_ORDER_OUT_OF_LIMIT - 10,
 			                  response.getBytes().length);
@@ -443,7 +434,6 @@ public class newServer {
 			            default:
 			              break;
 			            }
-			            System.out.println(response + "\n");
 			          }
 			          }
 			}
@@ -463,26 +453,17 @@ public class newServer {
 			URI uri = t.getRequestURI();
 			System.out.println(uri.toString());
 			String token = this.getToken(uri, t);
-			if (token == null) {
+			if (token == null || TokenCheck.getInstance().checkToken(token)) {
 				// token为空
 				response = ErrorInfo_INVALID_ACCESS_TOKEN;
 				t.sendResponseHeaders(ErrorCode_INVALID_ACCESS_TOKEN,
 						response.getBytes().length);
 			} else {
-				// token不为空
-
-				if (TokenCheck.getInstance().checkToken(token)) {
 					// token有效
 					AdminOrders adminorders = new AdminOrders();
 					response = adminorders.QueryAdminOrdersHand(token); // 返回数据
 					t.sendResponseHeaders(SuccessCode,
 							response.getBytes().length);
-
-				} else {
-					response = ErrorInfo_INVALID_ACCESS_TOKEN;
-					t.sendResponseHeaders(ErrorCode_INVALID_ACCESS_TOKEN,
-							response.getBytes().length);
-				}
 			}
 
 			OutputStream os = t.getResponseBody();
@@ -522,7 +503,7 @@ class myHandler implements HttpHandler {
 		String token = headers.getFirst("Access-Token");
 
 		// 不在Header中从URi中拿token
-		if (token.equals("")) {
+		if (token == null || token.equals("")) {
 			String query = tokenUri.getQuery();
 			if (query == null)
 				return null;
