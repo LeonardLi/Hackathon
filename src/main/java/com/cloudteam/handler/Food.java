@@ -1,12 +1,10 @@
 package com.cloudteam.handler;
 
-import com.cloudteam.hackathonServer.newServer;
-import com.cloudteam.utils.RedisOperator;
-import com.cloudteam.utils.TokenGenerator;
-
-import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
+
+import com.cloudteam.hackathonServer.newServer;
+import com.cloudteam.utils.RedisOperator;
 
 public class Food {
 

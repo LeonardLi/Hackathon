@@ -3,20 +3,14 @@ package com.cloudteam.utils;
 /***
  * 
  */
-import java.awt.PageAttributes.OriginType;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.xml.transform.Templates;
-
-import java.sql.Connection;
 
 import net.sf.json.JSONArray;
-import net.sf.json.JSONFunction;
 import net.sf.json.JSONObject;
 
 public class RedisOperator {

@@ -491,7 +491,7 @@ public class newServer {
 
 class myHandler implements HttpHandler {
 
-	@Override
+
 	public void handle(HttpExchange t) throws IOException {
 
 		// TODO Auto-generated method stub

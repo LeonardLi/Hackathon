@@ -28,10 +28,10 @@ public class Foods {
 			StringBuilder sql = new StringBuilder();
 			Statement statement = connection.createStatement();
 			sql.append("select * from food");
-			ResultSet resultSet = (ResultSet) statement.executeQuery(sql
+			ResultSet resultSet = statement.executeQuery(sql
 					.toString());
 			if (resultSet.next()) {
-				resultSet = (ResultSet) statement.executeQuery(sql.toString());
+				resultSet = statement.executeQuery(sql.toString());
 				while (resultSet.next()) {
 					
 					return_info = "{\"id\": " + resultSet.getString("id")

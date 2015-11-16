@@ -13,10 +13,7 @@ public class TokenCheck {
 	}
 
 	public boolean checkToken(String token) {
-		if (TokenGenerator.getInstance().User2Token.containsValue(token)) {
-			return true;
-		}
-		return false;
+		return TokenGenerator.getInstance().User2Token.containsValue(token);
 	}
 
 	public static final TokenCheck getInstance() {

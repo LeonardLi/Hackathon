@@ -31,7 +31,7 @@ public class Login  {
 				sql.append("select * from user where name='").append(username)
 						.append("' && password='").append(password).append("'");
 				Statement statement = connection.createStatement();
-				ResultSet resultSet = (ResultSet) statement.executeQuery(sql
+				ResultSet resultSet = statement.executeQuery(sql
 						.toString());
 				if (resultSet.next()) {
 					return_info = "{\n" + "\"user_id\": "
