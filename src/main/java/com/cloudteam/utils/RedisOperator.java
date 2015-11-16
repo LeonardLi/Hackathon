@@ -260,11 +260,12 @@ public class RedisOperator {
 				price += jo.getInt("count") * (Price[jo.getInt("food_id")]); // 算价钱
 																				// 单价乘以数量
 				// 改变库存
+				String instantCount= String.valueOf((Integer.parseInt(client.shardedJedis
+						.hget("Amounts", jo.getString("food_id"))) - jo
+						.getInt("count")));
 				client.shardedJedis.hset("Amounts", jo.getString("food_id"),
-						String.valueOf((Integer.parseInt(client.shardedJedis
-								.hget("Amounts", jo.getString("food_id"))) - jo
-								.getInt("count"))));
-				sql = "update food set stock=" + jo.getInt("count")
+						instantCount);
+				sql = "update food set stock=" + instantCount
 						+ " where id=" + jo.getInt("food_id");
 
 				PreparedStatement ps = cn.prepareStatement(sql);

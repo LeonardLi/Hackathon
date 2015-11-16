@@ -5,6 +5,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONException;
+import net.sf.json.JSONObject;
+
 import com.cloudteam.utils.DButils;
 
 public class Foods {
@@ -16,6 +20,8 @@ public class Foods {
 	public String QueryFoodsHand() {
 		String return_info = null;
 		Connection connection = null;
+		JSONObject obj = new JSONObject();
+		JSONArray result = new JSONArray();
 		try {
 			connection = DButils.getConnection(true);
 
@@ -26,22 +32,27 @@ public class Foods {
 					.toString());
 			if (resultSet.next()) {
 				resultSet = (ResultSet) statement.executeQuery(sql.toString());
-				return_info = "[";
 				while (resultSet.next()) {
-					return_info += "{\"id\": " + resultSet.getInt("id")
-							+ ",\"price\": \"" + resultSet.getDouble("price")
-							+ "\",\"stock\":\"" + resultSet.getInt("stock")
-							+ "\"}";
-					if (!resultSet.isLast())
-						return_info += ",";
+					
+					return_info = "{\"id\": " + resultSet.getString("id")
+							+ ",\"price\": " + resultSet.getDouble("price")
+							+ ",\"stock\":" + resultSet.getInt("stock")
+							+ "}";
+					obj = JSONObject.fromObject(return_info);
+					result.add(obj);
+					
 				}
-				return_info += "]";
-				System.out.println(return_info);
+				
+				//System.out.println(result);
 			} else
 				return "";
 		} catch (SQLException e) {
 			e.printStackTrace();
-		} finally {
+		}catch(JSONException e){
+			e.printStackTrace();
+			
+		} 
+		finally {
 			try {
 				DButils.close(connection);
 			} catch (SQLException e) {
@@ -49,6 +60,6 @@ public class Foods {
 				e.printStackTrace();
 			}
 		}
-		return return_info;
+		return result.toString();
 	}
 }

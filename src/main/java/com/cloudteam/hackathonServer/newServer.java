@@ -29,6 +29,7 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.spi.HttpServerProvider;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 public class newServer {
@@ -81,7 +82,7 @@ public class newServer {
 
 		// 指定端口号和最大并发数
 		HttpServer httpServer = provider.createHttpServer(
-				new InetSocketAddress(8081), 1000);
+				new InetSocketAddress(8081), 3000);
 
 		// 绑定处理器
 		httpServer.createContext("/login", new loginHandler());
@@ -345,8 +346,10 @@ public class newServer {
 				Foods foods = new Foods();
 				response = foods.QueryFoodsHand();
 				t.sendResponseHeaders(SuccessCode, response.getBytes().length);
+				JSONArray test = JSONArray.fromObject(response);
+				System.out.println(test);
 			}
-
+			
 			OutputStream os = t.getResponseBody();
 			os.write(response.getBytes());
 			os.close();
