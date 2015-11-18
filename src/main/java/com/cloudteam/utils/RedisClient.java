@@ -3,6 +3,8 @@ package com.cloudteam.utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.cloudteam.hackathonServer.newServer;
+
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -39,7 +41,7 @@ public class RedisClient {
 //        config.setMaxWait(1000l); 
         config.setTestOnBorrow(false); 
         
-        jedisPool = new JedisPool(config,"127.0.0.1",6379);
+        jedisPool = new JedisPool(config,newServer.REDIS_HOST,newServer.REDIS_PORT);
     }
     
     /** 
@@ -55,7 +57,7 @@ public class RedisClient {
         config.setTestOnBorrow(false); 
         // slave链接 
         List<JedisShardInfo> shards = new ArrayList<JedisShardInfo>(); 
-        shards.add(new JedisShardInfo("127.0.0.1", 6379, "master")); 
+        shards.add(new JedisShardInfo(newServer.REDIS_HOST, newServer.REDIS_PORT, "master")); 
 
         // 构造池 
         shardedJedisPool = new ShardedJedisPool(config, shards); 

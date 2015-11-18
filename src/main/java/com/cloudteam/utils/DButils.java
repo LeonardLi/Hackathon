@@ -6,12 +6,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import com.cloudteam.hackathonServer.newServer;
+
 public class DButils {
 
 	private static final String DRIVE_PATH = "com.mysql.jdbc.Driver";
-	private static final String URL = "jdbc:mysql://127.0.0.1:3306/eleme";
-	private static final String USER = "root";
-	private static final String PASSWORD = "toor";
+	private static final String URL = "jdbc:mysql://"+newServer.DB_HOST+":"+newServer.DB_PORT+"/"+newServer.DB_NAME;
+	private static final String USER = newServer.DB_USER;
+	private static final String PASSWORD = newServer.DB_PASS;
 
 	static {
 		try {

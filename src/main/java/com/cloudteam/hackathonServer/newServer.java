@@ -70,6 +70,7 @@ public class newServer {
 	public static String ErrorInfo_EMPTY_REQUEST = "{\"code\":\"EMPTY_REQUEST\",\"message\": \"请求体为空\" }";
 
 	public static void main(String[] args) throws Exception {
+		
 		if (beforeStartServer()) {
 			start();
 		} else {
@@ -82,7 +83,7 @@ public class newServer {
 
 		// 指定端口号和最大并发数
 		HttpServer httpServer = provider.createHttpServer(
-				new InetSocketAddress(8081), 3000);
+				new InetSocketAddress(8080), 3000);
 
 		// 绑定处理器
 		httpServer.createContext("/login", new loginHandler());
@@ -236,7 +237,7 @@ public class newServer {
 			String response = "";
 			System.out.println(t.getRequestMethod());
 			URI uri = t.getRequestURI();
-			System.out.println("uri:.............." + uri.toString());
+			//System.out.println("uri:.............." + uri.toString());
 			// 获取请求体，
 			String token = this.getToken(uri, t);
 			if (token == null || !TokenCheck.getInstance().checkToken(token)) {

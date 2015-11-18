@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,7 +17,7 @@ import net.sf.json.JSONObject;
 public class RedisOperator {
 
 	static String sql = null;
-	static DBHelper db1 = null;
+	static Connection connection = null;
 	static ResultSet ret = null;
 	private RedisClient client = null;
 	static Integer[] Price = new Integer[101]; // 把价钱存在内存里
@@ -38,9 +39,11 @@ public class RedisOperator {
 			return;
 		} else {
 			sql = "select *from food";// SQL语句
-			db1 = new DBHelper(sql);// 创建DBHelper对象
+			
 			try {
-				ret = db1.pst.executeQuery();// 执行语句，得到结果集
+				connection = DButils.getConnection(true);
+				Statement statement = connection.createStatement();
+				ret = statement.executeQuery(sql);// 执行语句，得到结果集
 				int i = 0;
 				while (ret.next()) {
 					client.shardedJedis.hset("Amounts", ret.getString(1),
@@ -49,7 +52,7 @@ public class RedisOperator {
 				} // 显示数据
 
 				ret.close();
-				db1.close();// 关闭连接
+				DButils.close(connection);;// 关闭连接
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
