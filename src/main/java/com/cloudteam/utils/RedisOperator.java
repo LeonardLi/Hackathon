@@ -35,7 +35,7 @@ public class RedisOperator {
 
 	public void copy2Redis() {
 
-		if (client.shardedJedis.hexists("Amounts", "1")) {
+		if (client.Jedis.hexists("Amounts","1")) {
 			return;
 		} else {
 			sql = "select *from food";// SQL语句
@@ -46,7 +46,7 @@ public class RedisOperator {
 				ret = statement.executeQuery(sql);// 执行语句，得到结果集
 				int i = 0;
 				while (ret.next()) {
-					client.shardedJedis.hset("Amounts", ret.getString(1),
+					client.Jedis.hset("Amounts", ret.getString(1),
 							ret.getString(2));
 					Price[++i] = Integer.parseInt(ret.getString(3));
 				} // 显示数据
@@ -61,7 +61,7 @@ public class RedisOperator {
 
 	public void copyToken2Redis(Map<Integer, String> tokenMap) {
 		for (int i = 1; i < 1001; i++) {
-			client.shardedJedis.hset("Token", String.valueOf(i),
+			client.Jedis.hset("Token", String.valueOf(i),
 					tokenMap.get(i));
 		}
 	}
@@ -69,22 +69,22 @@ public class RedisOperator {
 	public HashMap<Integer, String> getTokenMap() {
 		HashMap<Integer, String> hash = new HashMap<Integer, String>();
 		for (int i = 1; i < 1001; i++) {
-			hash.put(i, client.shardedJedis.hget("Token", String.valueOf(i)));
+			hash.put(i, client.Jedis.hget("Token", String.valueOf(i)));
 		}
 		return hash;
 	}
 
 	// 购物车存在与否
 	public boolean isCartsExist(String cart_id) {
-		return client.shardedJedis.hexists("Carts", cart_id);
+		return client.Jedis.hexists("Carts", cart_id);
 	}
 
 	// 获取订单信息
 	public String getOrder(String order_id) {
 		JSONArray result = new JSONArray();
 		JSONObject js = new JSONObject();
-		if (client.shardedJedis.hget("Orders", order_id) != null) {
-			js = JSONObject.fromObject(client.shardedJedis.hget("Orders",
+		if (client.Jedis.hget("Orders", order_id) != null) {
+			js = JSONObject.fromObject(client.Jedis.hget("Orders",
 					order_id));
 			result.add(js);
 			return result.toString();
@@ -99,7 +99,7 @@ public class RedisOperator {
 		JSONArray allorder_info = new JSONArray();
 		JSONObject order_info = new JSONObject();
 
-		Map<String, String> result = client.shardedJedis.hgetAll("Orders");
+		Map<String, String> result = client.Jedis.hgetAll("Orders");
 		if (result != null) {
 			for (Map.Entry<String, String> entry : result.entrySet()) {
 				int user_id = TokenGenerator.getInstance().Token2User.get(entry
@@ -116,7 +116,7 @@ public class RedisOperator {
 
 	// 订单是否创建过
 	public boolean checkOrders(String cart_td) {
-		return client.shardedJedis.hexists("Orders", cart_td);
+		return client.Jedis.hexists("Orders", cart_td);
 	}
 
 	// 食物库存足不足
@@ -125,13 +125,13 @@ public class RedisOperator {
 			JSONObject json_temp = new JSONObject();
 			json_temp = JSONObject.fromObject(str_json);
 			String cart_id = json_temp.getString("cart_id");
-			String cart_info = client.shardedJedis.hget("Carts", cart_id);
+			String cart_info = client.Jedis.hget("Carts", cart_id);
 			JSONArray ja = new JSONArray();
 			ja = JSONArray.fromObject(cart_info);
 			for (int i = 0; i < ja.size(); i++) {
 				int order_amount = JSONObject.fromObject(ja.get(i)).getInt(
 						"count");
-				String amount = client.shardedJedis.hget("Amounts", JSONObject
+				String amount = client.Jedis.hget("Amounts", JSONObject
 						.fromObject(ja.get(i)).getString("food_id"));
 				if (order_amount > 1000
 						|| Integer.parseInt(amount) - order_amount < 0) {
@@ -168,8 +168,8 @@ public class RedisOperator {
 	public String createCarts(String token) {
 		// 创建篮子
 		// int carts_id = TokenGenerator.getInstance().Token2User.get(token);
-		if (client.shardedJedis.hget("Carts", token) == null)
-			client.shardedJedis.hset("Carts", token, ""); // token暂时设计为篮子ID
+		if (client.Jedis.hget("Carts", token) == null)
+			client.Jedis.hset("Carts", token, ""); // token暂时设计为篮子ID
 		return token;
 	}
 
@@ -183,7 +183,7 @@ public class RedisOperator {
 		if (count > 3)
 			return false;
 
-		String result = client.shardedJedis.hget("Carts", carts_id);
+		String result = client.Jedis.hget("Carts", carts_id);
 
 		// 准备插入redis
 		JSONArray food_items = new JSONArray();
@@ -191,7 +191,7 @@ public class RedisOperator {
 			food_items.add(food_add); // 第一种食物信息
 			System.out.println("cart_info:............" + food_items.toString()
 					+ "\n");
-			client.shardedJedis.hset("Carts", carts_id, food_items.toString()); // 插入redis,格式为JSONArray
+			client.Jedis.hset("Carts", carts_id, food_items.toString()); // 插入redis,格式为JSONArray
 			return true;
 		} else { // 不是第一次添加，取出数据再直接加入食物
 			int total_count = 0; // 当前食物总量
@@ -227,7 +227,7 @@ public class RedisOperator {
 				}
 				System.out.println("cart_info:............"
 						+ food_items.toString() + "\n");
-				client.shardedJedis.hset("Carts", carts_id,
+				client.Jedis.hset("Carts", carts_id,
 						food_items.toString()); // 插入redis,格式为JSONArray
 				return true;
 			}
@@ -248,7 +248,7 @@ public class RedisOperator {
 
 			// 查询cart_info
 			JSONArray cart_info = new JSONArray();
-			cart_info = JSONArray.fromObject(client.shardedJedis.hget("Carts",
+			cart_info = JSONArray.fromObject(client.Jedis.hget("Carts",
 					carts_id)); // 拿到cart_info数据，JSONArray
 			int price = 0;
 			JSONObject jo = new JSONObject();
@@ -257,10 +257,10 @@ public class RedisOperator {
 				price += jo.getInt("count") * (Price[jo.getInt("food_id")]); // 算价钱
 																				// 单价乘以数量
 				// 改变库存
-				String instantCount= String.valueOf((Integer.parseInt(client.shardedJedis
+				String instantCount= String.valueOf((Integer.parseInt(client.Jedis
 						.hget("Amounts", jo.getString("food_id"))) - jo
 						.getInt("count")));
-				client.shardedJedis.hset("Amounts", jo.getString("food_id"),
+				client.Jedis.hset("Amounts", jo.getString("food_id"),
 						instantCount);
 				sql = "update food set stock=" + instantCount
 						+ " where id=" + jo.getInt("food_id");
@@ -275,7 +275,7 @@ public class RedisOperator {
 				order_info.put("items", cart_info);
 				order_info.put("total", price);
 
-				client.shardedJedis.hset("Orders", order_id,
+				client.Jedis.hset("Orders", order_id,
 						order_info.toString());  // 插入orders,类型为JSONObject
 				// 关闭连接
 				cn.close();
@@ -293,12 +293,12 @@ public class RedisOperator {
 	}
 
 	public boolean checkLoadToken() {
-		boolean isExist = client.shardedJedis.hexists("Token", "1");
+		boolean isExist = client.Jedis.hexists("Token", "1");
 		return isExist;
 	}
 
 	public boolean checkLoadAmount() {
-		boolean isExist = client.shardedJedis.hexists("Amounts", "1");
+		boolean isExist = client.Jedis.hexists("Amounts", "1");
 		return isExist;
 	}
 }

@@ -83,7 +83,7 @@ public class newServer {
 
 		// 指定端口号和最大并发数
 		HttpServer httpServer = provider.createHttpServer(
-				new InetSocketAddress(8080), 3000);
+				new InetSocketAddress(APP_PORT), 3000);
 
 		// 绑定处理器
 		httpServer.createContext("/login", new loginHandler());
