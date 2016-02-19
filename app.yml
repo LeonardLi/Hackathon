@@ -1,0 +1,6 @@
+language: java
+script:
+ - javac -classpath lib/commons-beanutils-1.8.0.jar:lib/commons-collections-3.2.1.jar:lib/commons-lang-2.5.jar:lib/commons-logging-1.1.1.jar:lib/commons-pool2-2.3.jar:lib/ezmorph-1.0.6.jar:lib/http-20070405.jar:lib/jedis-2.7.3.jar:lib/json-lib-2.4-jdk15.jar:lib/mysql-connector-java-5.1.6.jar src/*.java -d bin/
+
+ - java -classpath bin/:lib/commons-beanutils-1.8.0.jar:lib/commons-collections-3.2.1.jar:lib/commons-lang-2.5.jar:lib/commons-logging-1.1.1.jar:lib/commons-pool2-2.3.jar:lib/ezmorph-1.0.6.jar:lib/http-20070405.jar:lib/jedis-2.7.3.jar:lib/json-lib-2.4-jdk15.jar:lib/mysql-connector-java-5.1.6.jar newServer $APP_HOST $APP_PORT $DB_HOST $DB_PORT $DB_NAME $DB_USER $DB_PASS $REDIS_HOST $REDIS_PORT
+

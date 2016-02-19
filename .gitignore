@@ -1,2 +1,6 @@
-target/
-*.DS_Store
+.vagrant
+benchmark
+tests
+*.log
+*.class
+tests

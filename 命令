@@ -1,0 +1,77 @@
+javac -classpath lib/commons-beanutils-1.8.0.jar:lib/commons-collections-3.2.1.jar:lib/commons-lang-2.5.jar:lib/commons-logging-1.1.1.jar:lib/commons-pool2-2.3.jar:lib/ezmorph-1.0.6.jar:lib/http-20070405.jar:lib/jedis-2.7.3.jar:lib/json-lib-2.4-jdk15.jar:lib/mysql-connector-java-5.1.6.jar src/*.java -d bin/ 
+
+java -classpath bin/:lib/commons-beanutils-1.8.0.jar:lib/commons-collections-3.2.1.jar:lib/commons-lang-2.5.jar:lib/commons-logging-1.1.1.jar:lib/commons-pool2-2.3.jar:lib/ezmorph-1.0.6.jar:lib/http-20070405.jar:lib/jedis-2.7.3.jar:lib/json-lib-2.4-jdk15.jar:lib/mysql-connector-java-5.1.6.jar newServer $APP_HOST $APP_PORT $DB_HOST $DB_PORT $DB_NAME $DB_USER $DB_PASS $REDIS_HOST $REDIS_PORT
+
+Orders Per SeconScore:                8
+Correct Rate:         0.0%
+
+Stats
+Concurrent Level:     2 x 4
+Time taken for tests: 185388.54ms
+Complete requests:    12983
+Failed requests:      9000
+Complete orders:      495
+Failed orders:        9505
+Time per request:     106.08ms (mean)
+Time per order:       2972.16ms (mean)
+Request per second:   133 (max) 25 (min) 69 (mean)
+Order per second:     8 (max) 2 (min) 4 (mean)
+
+Percentage of orders made within a certain time (ms)
+  50%      118
+  75%      193
+  80%      215
+  90%      299
+  95%      395
+  98%      627
+ 100%      1569
+
+
+Orders Per SeconScore:                8
+Correct Rate:         0.0%
+
+Stats
+Concurrent Level:     2 x 4
+Time taken for tests: 186309.81ms
+Complete requests:    12983
+Failed requests:      9000
+Complete orders:      495
+Failed orders:        9505
+Time per request:     106.17ms (mean)
+Time per order:       2986.79ms (mean)
+Request per second:   121 (max) 26 (min) 69 (mean)
+Order per second:     8 (max) 2 (min) 4 (mean)
+
+Percentage of orders made within a certain time (ms)
+  50%      117
+  75%      198
+  80%      216
+  90%      305
+  95%      409
+  98%      620
+ 100%      1730
+
+
+Orders Per SeconScore:                8
+Correct Rate:         0.0%
+
+Stats
+Concurrent Level:     2 x 4
+Time taken for tests: 185924.26ms
+Complete requests:    12967
+Failed requests:      9015
+Complete orders:      480
+Failed orders:        9520
+Time per request:     106.48ms (mean)
+Time per order:       3077.87ms (mean)
+Request per second:   135 (max) 23 (min) 69 (mean)
+Order per second:     8 (max) 1 (min) 4 (mean)
+
+Percentage of orders made within a certain time (ms)
+  50%      117
+  75%      194
+  80%      221
+  90%      307
+  95%      406
+  98%      632
+ 100%      1707
