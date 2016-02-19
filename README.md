@@ -1,11 +1,6 @@
-# Eleme Hackathon Intro
+# eleme-hackthon
 
-饿了么 Hackathon 2015 初赛信息介绍。
-
-活动及报名官网: http://hackathon.ele.me
-
-本简介官方仓库: https://hackhub.ele.me/eleme/hackathon-intro
-
+研一和实验室小伙伴一起参与的饿了么线下的初赛，算是一次有趣的经历。
 
 ## 初赛赛题
 
@@ -177,3 +172,5 @@ py.test test_carts.py
 * 脚本模拟基础用户下单流程，最终成绩以每秒成功订单数为准。
 
 请注意代码中对应的环境变量，不要写死对应的值，而是根据环境变量获取。
+
+
